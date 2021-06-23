@@ -12,8 +12,6 @@ import java.nio.charset.StandardCharsets;
 public class TcpSocket implements Runnable {
 
     private Socket socket;
-    DataInputStream inputStream;
-    BufferedReader bufferedReader;
     private boolean shouldRun;
     private byte[] outBuffer;
 
@@ -25,8 +23,6 @@ public class TcpSocket implements Runnable {
         try {
             socket = new Socket(address, port);
             socket.setTcpNoDelay(true);
-            inputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             shouldRun = true;
             System.out.println("Successfully created tcp socket to " + address.getHostAddress() + ":" + port);
         } catch (IOException e) {

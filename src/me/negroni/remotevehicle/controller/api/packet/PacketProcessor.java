@@ -16,7 +16,6 @@ public class PacketProcessor {
     }
 
     public void acceptPacket(PacketContainer packetContainer) {
-        System.out.println(packetContainer.getPacketType().toString());
         callbacks.get(packetContainer.getPacketType()).forEach(c -> c.accept(packetContainer));
     }
 }

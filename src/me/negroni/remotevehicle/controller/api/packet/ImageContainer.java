@@ -13,7 +13,6 @@ public class ImageContainer extends PacketContainer {
         String headerImageLength = new String(getWholePacket(), StandardCharsets.ISO_8859_1).substring(4, 10).trim();
         try {
             this.imageLength = Integer.parseInt(headerImageLength);
-            System.out.println("receiving image with length: " + imageLength);
         } catch (Exception e) {
             System.out.println("failed to convert integer");
             e.printStackTrace();

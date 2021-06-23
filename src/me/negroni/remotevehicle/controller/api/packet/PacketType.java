@@ -9,10 +9,12 @@ public enum PacketType {
     PACKET_REQUEST_CONNECTION("CFRC", PackerSender.CLIENT),
     PACKET_ACCEPTED_CONNECTION("CFCK", PackerSender.SERVER),
     PACKET_HEARTBEAT("CFHB", PackerSender.ANY),
+    PACKET_REQUEST_CONNECTION_END("CFRE", PackerSender.CLIENT),
+    PACKET_CONFIRM_CONNECTION_END("CFCE", PackerSender.SERVER),
+    PACKET_FORCE_CONNECTION_END("CFXC", PackerSender.SERVER),
 
     PACKET_REQUEST_CAMERA_IMAGE("DTRC", PackerSender.CLIENT),
-    PACKET_CAMERA_IMAGE("DTDC", PackerSender.SERVER),
-    PACKET_IMAGE_DONE("CUSTOM-IMAGE-DONE", PackerSender.NONE);
+    PACKET_CAMERA_IMAGE("DTDC", PackerSender.SERVER);
 
     private final String code;
     private final PackerSender sender;

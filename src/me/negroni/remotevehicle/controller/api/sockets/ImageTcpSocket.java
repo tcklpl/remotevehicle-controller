@@ -1,7 +1,6 @@
 package me.negroni.remotevehicle.controller.api.sockets;
 
 import me.negroni.remotevehicle.controller.api.packet.ImageContainer;
-import me.negroni.remotevehicle.controller.api.packet.PacketContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketProcessor;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
 import me.negroni.remotevehicle.controller.api.utils.PacketHeaderUtils;
@@ -9,13 +8,10 @@ import me.negroni.remotevehicle.controller.api.utils.PacketHeaderUtils;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 public class ImageTcpSocket implements Runnable {
 
     private Socket socket;
-    DataInputStream inputStream;
-    BufferedReader bufferedReader;
     private boolean shouldRun;
 
     private final PacketProcessor packetProcessor;
@@ -26,8 +22,6 @@ public class ImageTcpSocket implements Runnable {
         try {
             socket = new Socket(address, port);
             socket.setTcpNoDelay(true);
-            inputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             shouldRun = true;
             System.out.println("Successfully created image tcp socket to " + address.getHostAddress() + ":" + port);
         } catch (IOException e) {

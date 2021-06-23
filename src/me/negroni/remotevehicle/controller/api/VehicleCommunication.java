@@ -18,6 +18,7 @@ public class VehicleCommunication {
     private TcpSocket tcpSocket;
     private ImageTcpSocket imageTcpSocket;
     private boolean connected = false;
+    private boolean shouldTryToConnect = false;
 
     public VehicleCommunication() {
         registerDefaultCallbacks();
@@ -29,7 +30,12 @@ public class VehicleCommunication {
 
     private void registerDefaultCallbacks() {
         packetProcessor.registerCallback(PacketType.PACKET_SERVER_BROADCASTING, c -> {
-            if (tcpSocket != null) return;
+            if (connected) return;
+            if (!shouldTryToConnect) return;
+            if (tcpSocket != null)
+                tcpSocket.stop();
+            if (imageTcpSocket != null)
+                imageTcpSocket.stop();
             tcpSocket = new TcpSocket(packetProcessor, c.getRemoteAddress(), 6887);
             imageTcpSocket = new ImageTcpSocket(packetProcessor, c.getRemoteAddress(), 6889);
             new Thread(tcpSocket).start();
@@ -45,6 +51,30 @@ public class VehicleCommunication {
         packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> {
             tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT);
         });
+
+        packetProcessor.registerCallback(PacketType.PACKET_CONFIRM_CONNECTION_END, c -> {
+            endConnection();
+        });
+
+        packetProcessor.registerCallback(PacketType.PACKET_FORCE_CONNECTION_END, c -> {
+            endConnection();
+        });
+    }
+
+    public void disconnect() {
+        if (!connected) throw new ClientNotConnectedException("client is not yet connected");
+        tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION_END);
+    }
+
+    private void endConnection() {
+        stopThreads();
+        connected = false;
+        shouldTryToConnect = false;
+    }
+
+    private void stopThreads() {
+        tcpSocket.stop();
+        imageTcpSocket.stop();
     }
 
     public void registerCustomCallback(PacketType packetType, Consumer<PacketContainer> lambda) {
@@ -57,5 +87,17 @@ public class VehicleCommunication {
             throw new NotAClientPacketException("cannot send a server packet");
 
         tcpSocket.sendPacket(packetType, extraInfo);
+    }
+
+    public boolean isTryingToConnect() {
+        return shouldTryToConnect;
+    }
+
+    public void setShouldTryToConnect(boolean shouldTryToConnect) {
+        this.shouldTryToConnect = shouldTryToConnect;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }
