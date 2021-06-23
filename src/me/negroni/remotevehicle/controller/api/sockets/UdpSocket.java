@@ -1,7 +1,10 @@
 package me.negroni.remotevehicle.controller.api.sockets;
 
+import me.negroni.remotevehicle.controller.api.packet.ImageContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketProcessor;
+import me.negroni.remotevehicle.controller.api.packet.PacketType;
+import me.negroni.remotevehicle.controller.api.utils.PacketHeaderUtils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -16,11 +19,12 @@ public class UdpSocket implements Runnable {
     private final PacketProcessor packetProcessor;
 
     public UdpSocket(PacketProcessor packetProcessor, int port) {
-        this.receivedData = new byte[10];
+        this.receivedData = new byte[1446];
         this.shouldRun = true;
         this.packetProcessor = packetProcessor;
         try {
             socket = new DatagramSocket(port);
+            socket.setReceiveBufferSize(receivedData.length);
             System.out.println("Listening udp on port " + port);
         } catch (SocketException e) {
             System.err.println("Failed to bind udp socket on port " + port);

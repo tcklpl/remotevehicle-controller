@@ -1,5 +1,7 @@
 package me.negroni.remotevehicle.controller.api.packet;
 
+import java.util.Arrays;
+
 public enum PacketType {
     UNKNOWN_PACKET("UNKNOWN", PackerSender.SERVER),
 
@@ -30,5 +32,9 @@ public enum PacketType {
 
     public enum PackerSender {
         SERVER, CLIENT, ANY, NONE
+    }
+
+    public static PacketType getPacketTypeByCode(String code) {
+        return Arrays.stream(values()).filter(p -> p.getCode().equals(code)).findFirst().orElse(UNKNOWN_PACKET);
     }
 }

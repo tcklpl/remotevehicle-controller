@@ -5,17 +5,18 @@ import me.negroni.remotevehicle.controller.api.exceptions.NotAClientPacketExcept
 import me.negroni.remotevehicle.controller.api.packet.PacketContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketProcessor;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
+import me.negroni.remotevehicle.controller.api.sockets.ImageTcpSocket;
 import me.negroni.remotevehicle.controller.api.sockets.TcpSocket;
 import me.negroni.remotevehicle.controller.api.sockets.UdpSocket;
 
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class VehicleCommunication {
 
     private final PacketProcessor packetProcessor = new PacketProcessor();
-    private final UdpSocket udpSocket = new UdpSocket(packetProcessor, 6887);
+    private final UdpSocket udpSocket = new UdpSocket(packetProcessor, 6888);
     private TcpSocket tcpSocket;
+    private ImageTcpSocket imageTcpSocket;
     private boolean connected = false;
 
     public VehicleCommunication() {
@@ -30,7 +31,9 @@ public class VehicleCommunication {
         packetProcessor.registerCallback(PacketType.PACKET_SERVER_BROADCASTING, c -> {
             if (tcpSocket != null) return;
             tcpSocket = new TcpSocket(packetProcessor, c.getRemoteAddress(), 6887);
+            imageTcpSocket = new ImageTcpSocket(packetProcessor, c.getRemoteAddress(), 6889);
             new Thread(tcpSocket).start();
+            new Thread(imageTcpSocket).start();
             tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION);
         });
 
@@ -41,19 +44,6 @@ public class VehicleCommunication {
 
         packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> {
             tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT);
-        });
-
-        packetProcessor.registerCallback(PacketType.PACKET_CAMERA_IMAGE, c -> {
-            if (!c.hasLateBytes()) {
-                try {
-                    String original = new String(c.getWholePacket(), StandardCharsets.ISO_8859_1).substring(4, 10).trim();
-                    int len = Integer.parseInt(original);
-                    tcpSocket.setNextBytesToRead(len, c);
-                } catch (Exception e) {
-                    System.err.println("error when trying to get image");
-                    e.printStackTrace();
-                }
-            }
         });
     }
 

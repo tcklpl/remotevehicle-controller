@@ -1,6 +1,7 @@
 package me.negroni.remotevehicle.controller.tests;
 
 import me.negroni.remotevehicle.controller.api.RemoteVehicle;
+import me.negroni.remotevehicle.controller.api.packet.ImageContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class GuiTest {
         frame.setVisible(true);
 
         btnRequestImg.addActionListener(e -> {
+            btnRequestImg.setEnabled(false);
             remoteVehicle.getCommunication().sendPacket(PacketType.PACKET_REQUEST_CAMERA_IMAGE);
         });
     }
@@ -36,9 +38,9 @@ public class GuiTest {
         });
 
         remoteVehicle.getCommunication().registerCustomCallback(PacketType.PACKET_CAMERA_IMAGE, c -> {
-            if (c.hasLateBytes()) {
-                imgLabel.setIcon(new ImageIcon(c.getLateBytes()));
-            }
+            ImageContainer ic = (ImageContainer) c;
+            imgLabel.setIcon(new ImageIcon(ic.getImage()));
+            btnRequestImg.setEnabled(true);
         });
     }
 }
