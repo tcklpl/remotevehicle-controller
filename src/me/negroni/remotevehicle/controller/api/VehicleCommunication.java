@@ -40,7 +40,7 @@ public class VehicleCommunication {
             imageTcpSocket = new ImageTcpSocket(packetProcessor, c.getRemoteAddress(), 6889);
             new Thread(tcpSocket).start();
             new Thread(imageTcpSocket).start();
-            tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION);
+            tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION, null);
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> {
@@ -49,7 +49,7 @@ public class VehicleCommunication {
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> {
-            tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT);
+            sendPacket(PacketType.PACKET_HEARTBEAT);
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_CONFIRM_CONNECTION_END, c -> {
@@ -63,7 +63,7 @@ public class VehicleCommunication {
 
     public void disconnect() {
         if (!connected) throw new ClientNotConnectedException("client is not yet connected");
-        tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION_END);
+        sendPacket(PacketType.PACKET_REQUEST_CONNECTION_END);
     }
 
     private void endConnection() {
@@ -81,12 +81,20 @@ public class VehicleCommunication {
         packetProcessor.registerCallback(packetType, lambda);
     }
 
-    public void sendPacket(PacketType packetType, String... extraInfo) {
+    public void sendPacket(PacketType packetType) {
         if (!connected) throw new ClientNotConnectedException("cannot send packets while tcp client is not yet connected");
         if (packetType.getSender() != PacketType.PackerSender.CLIENT && packetType.getSender() != PacketType.PackerSender.ANY)
             throw new NotAClientPacketException("cannot send a server packet");
 
-        tcpSocket.sendPacket(packetType, extraInfo);
+        tcpSocket.sendPacket(packetType, null);
+    }
+
+    public void sendPacket(PacketType packetType, String optionalInfo) {
+        if (!connected) throw new ClientNotConnectedException("cannot send packets while tcp client is not yet connected");
+        if (packetType.getSender() != PacketType.PackerSender.CLIENT && packetType.getSender() != PacketType.PackerSender.ANY)
+            throw new NotAClientPacketException("cannot send a server packet");
+
+        tcpSocket.sendPacket(packetType, optionalInfo);
     }
 
     public boolean isTryingToConnect() {

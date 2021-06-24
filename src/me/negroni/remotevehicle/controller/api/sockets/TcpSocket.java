@@ -8,12 +8,14 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class TcpSocket implements Runnable {
 
     private Socket socket;
     private boolean shouldRun;
-    private byte[] outBuffer;
+    private final Queue<byte[]> outQueue = new LinkedList<>();
 
     private final PacketProcessor packetProcessor;
 
@@ -31,23 +33,22 @@ public class TcpSocket implements Runnable {
         }
     }
 
-    public void sendPacket(PacketType type, String... optionalInfo) {
-        sendMessage(type.getCode() + String.join("", optionalInfo));
+    public void sendPacket(PacketType type, String optionalInfo) {
+        sendMessage(type.getCode() + (optionalInfo == null ? "" : optionalInfo));
     }
 
     private void sendMessage(String msg) {
-        outBuffer = msg.getBytes(StandardCharsets.ISO_8859_1);
+        outQueue.add(msg.getBytes(StandardCharsets.ISO_8859_1));
     }
 
     @Override
     public void run() {
         while (shouldRun) {
             // write is there is anything to write
-            if (outBuffer != null) {
+            if (!outQueue.isEmpty()) {
                 try {
-                    socket.getOutputStream().write(outBuffer);
+                    socket.getOutputStream().write(outQueue.remove());
                     socket.getOutputStream().flush();
-                    outBuffer = null;
 
                 } catch (IOException e) {
                     System.err.println("Failed to write to tcp socket out stream");
