@@ -51,9 +51,13 @@ public class ImageTcpSocket implements Runnable {
                     }
 
                 }
-            } catch (IOException e) {
-                System.err.println("Failed to read img tcp socket in stream");
-                e.printStackTrace();
+            } catch (IOException | IndexOutOfBoundsException e) {
+                System.err.println("Image socket error, requesting too much?");
+                try {
+                    socket.getInputStream().skipNBytes(socket.getInputStream().available());
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         }
     }

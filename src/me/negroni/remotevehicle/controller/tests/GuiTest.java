@@ -32,7 +32,7 @@ public class GuiTest {
         frame.setVisible(true);
 
         btnRequestImg.addActionListener(e -> {
-            btnRequestImg.setEnabled(false);
+            //btnRequestImg.setEnabled(false);
             remoteVehicle.getCommunication().sendPacket(PacketType.PACKET_REQUEST_CAMERA_IMAGE);
         });
 
