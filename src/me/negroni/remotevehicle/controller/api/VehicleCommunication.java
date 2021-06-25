@@ -81,6 +81,10 @@ public class VehicleCommunication {
         packetProcessor.registerCallback(packetType, lambda);
     }
 
+    public void registerCustomLimitedCallback(PacketType packetType, int uses, Consumer<PacketContainer> lambda) {
+        packetProcessor.registerCallbackForNUses(packetType, uses, lambda);
+    }
+
     public void sendPacket(PacketType packetType) {
         if (!connected) throw new ClientNotConnectedException("cannot send packets while tcp client is not yet connected");
         if (packetType.getSender() != PacketType.PackerSender.CLIENT && packetType.getSender() != PacketType.PackerSender.ANY)

@@ -32,8 +32,10 @@ public class GuiTest {
         frame.setVisible(true);
 
         btnRequestImg.addActionListener(e -> {
-            //btnRequestImg.setEnabled(false);
-            remoteVehicle.getCommunication().sendPacket(PacketType.PACKET_REQUEST_CAMERA_IMAGE);
+            remoteVehicle.getCamera().requestCameraImage(b -> {
+                imgLabel.setIcon(new ImageIcon(b));
+                btnRequestImg.setEnabled(true);
+            });
         });
 
         btnConnect.addActionListener(e -> {
@@ -51,12 +53,6 @@ public class GuiTest {
         remoteVehicle.getCommunication().registerCustomCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> {
             titleLabel.setText("Status: CONECTADO (" + c.getRemoteAddress().toString() + ")");
             btnDisconnect.setEnabled(true);
-            btnRequestImg.setEnabled(true);
-        });
-
-        remoteVehicle.getCommunication().registerCustomCallback(PacketType.PACKET_CAMERA_IMAGE, c -> {
-            ImageContainer ic = (ImageContainer) c;
-            imgLabel.setIcon(new ImageIcon(ic.getImage()));
             btnRequestImg.setEnabled(true);
         });
 
