@@ -34,22 +34,32 @@ public class VehicleCommunication {
             if (!shouldTryToConnect) return;
             if (tcpSocket != null)
                 tcpSocket.stop();
-            if (imageTcpSocket != null)
-                imageTcpSocket.stop();
             tcpSocket = new TcpSocket(packetProcessor, c.getRemoteAddress(), 6887);
-            imageTcpSocket = new ImageTcpSocket(packetProcessor, c.getRemoteAddress(), 6889);
             new Thread(tcpSocket).start();
-            new Thread(imageTcpSocket).start();
             tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION, null);
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> {
+            System.out.println("Connected CMD!");
+        });
+
+        packetProcessor.registerCallback(PacketType.PACKET_SERVER_REQUESTING_IMG_CONNECTION_ATTEMPT, c -> {
+            if (connected) return;
+            if (!shouldTryToConnect) return;
+            if (imageTcpSocket != null)
+                imageTcpSocket.stop();
+            imageTcpSocket = new ImageTcpSocket(packetProcessor, c.getRemoteAddress(), 6889);
+            new Thread(imageTcpSocket).start();
+            imageTcpSocket.sendPacket(PacketType.PACKET_IMG_CONNECTION_ATTEMPT, null);
+        });
+
+        packetProcessor.registerCallback(PacketType.PACKET_IMG_ACCEPTED_CONNECTION, c -> {
+            System.out.println("Connected IMG!");
             connected = true;
-            System.out.println("Connected!");
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> {
-            sendPacket(PacketType.PACKET_HEARTBEAT);
+            tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT, null);
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_CONFIRM_CONNECTION_END, c -> {
