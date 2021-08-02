@@ -22,7 +22,6 @@ public class ImageTcpSocket extends GenericTcpSocket implements Runnable {
         while (shouldRun) {
 
             writeIfTheresAnything();
-
             byte[] read = read(10);
             if (read != null) {
                 PacketType type = PacketType.getPacketTypeByCode(PacketHeaderUtils.extractHeaderFromPacket(read));

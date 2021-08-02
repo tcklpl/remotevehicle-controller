@@ -1,10 +1,11 @@
 package me.negroni.remotevehicle.controller.tests;
 
 import me.negroni.remotevehicle.controller.api.RemoteVehicle;
-import me.negroni.remotevehicle.controller.api.packet.ImageContainer;
+import me.negroni.remotevehicle.controller.api.camera.CameraImageSize;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
 
 import javax.swing.*;
+import java.util.Arrays;
 
 public class GuiTest {
 
@@ -15,6 +16,9 @@ public class GuiTest {
     private JLabel imgLabel;
     private JButton btnDisconnect;
     private JButton btnConnect;
+    private JComboBox<CameraImageSize> cmbRes;
+    private JButton btnRes;
+    private JLabel lblRes;
 
     private final RemoteVehicle remoteVehicle;
 
@@ -31,10 +35,19 @@ public class GuiTest {
         btnRequestImg.setEnabled(false);
         frame.setVisible(true);
 
+        Arrays.stream(CameraImageSize.values()).forEach(x -> cmbRes.addItem(x));
+
         btnRequestImg.addActionListener(e -> {
             remoteVehicle.getCamera().requestCameraImage(b -> {
                 imgLabel.setIcon(new ImageIcon(b));
                 btnRequestImg.setEnabled(true);
+            });
+        });
+
+        btnRes.addActionListener(e -> {
+            lblRes.setText("Resolução: (Mudando)");
+            remoteVehicle.getCamera().requestResolutionChange((CameraImageSize) cmbRes.getSelectedItem(), () -> {
+                lblRes.setText("Resolução:");
             });
         });
 

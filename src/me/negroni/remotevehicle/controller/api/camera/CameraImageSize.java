@@ -15,8 +15,7 @@ public enum CameraImageSize {
     SIZE_XGA(11, 1024, 768),
     SIZE_HD(12, 1280, 720),
     SIZE_SXGA(13, 1280, 1024),
-    SIZE_UXGA(14, 1600, 1200)
-    ;
+    SIZE_UXGA(14, 1600, 1200);
 
     private final int code, width, height;
 

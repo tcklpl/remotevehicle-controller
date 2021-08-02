@@ -3,6 +3,7 @@ package me.negroni.remotevehicle.controller.api.sockets;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +57,14 @@ public abstract class GenericTcpSocket {
             int result = socket.getInputStream().read(inputData, 0, socket.getInputStream().available());
             if (result > 0) {
                 return inputData;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("Index out of bounds, skipping bytes...");
+            try {
+                socket.getInputStream().skipNBytes(socket.getInputStream().available());
+            } catch (IOException ex) {
+                System.err.println("Failed to skip bytes");
+                ex.printStackTrace();
             }
         } catch (IOException e) {
             System.err.println("Failed to read tcp socket in stream");
