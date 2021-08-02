@@ -5,6 +5,7 @@ import me.negroni.remotevehicle.controller.api.exceptions.NotAClientPacketExcept
 import me.negroni.remotevehicle.controller.api.packet.PacketContainer;
 import me.negroni.remotevehicle.controller.api.packet.PacketProcessor;
 import me.negroni.remotevehicle.controller.api.packet.PacketType;
+import me.negroni.remotevehicle.controller.api.packet.callback.MutuallyExclusiveCallback;
 import me.negroni.remotevehicle.controller.api.sockets.ImageTcpSocket;
 import me.negroni.remotevehicle.controller.api.sockets.TcpSocket;
 import me.negroni.remotevehicle.controller.api.sockets.UdpSocket;
@@ -39,9 +40,7 @@ public class VehicleCommunication {
             tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION, null);
         });
 
-        packetProcessor.registerCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> {
-            System.out.println("Connected CMD!");
-        });
+        packetProcessor.registerCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> System.out.println("Connected CMD!"));
 
         packetProcessor.registerCallback(PacketType.PACKET_SERVER_REQUESTING_IMG_CONNECTION_ATTEMPT, c -> {
             if (connected) return;
@@ -58,17 +57,11 @@ public class VehicleCommunication {
             connected = true;
         });
 
-        packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> {
-            tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT, null);
-        });
+        packetProcessor.registerCallback(PacketType.PACKET_HEARTBEAT, c -> tcpSocket.sendPacket(PacketType.PACKET_HEARTBEAT, null));
 
-        packetProcessor.registerCallback(PacketType.PACKET_CONFIRM_CONNECTION_END, c -> {
-            endConnection();
-        });
+        packetProcessor.registerCallback(PacketType.PACKET_CONFIRM_CONNECTION_END, c -> endConnection());
 
-        packetProcessor.registerCallback(PacketType.PACKET_FORCE_CONNECTION_END, c -> {
-            endConnection();
-        });
+        packetProcessor.registerCallback(PacketType.PACKET_FORCE_CONNECTION_END, c -> endConnection());
     }
 
     public void disconnect() {
@@ -93,6 +86,10 @@ public class VehicleCommunication {
 
     public void registerCustomLimitedCallback(PacketType packetType, int uses, Consumer<PacketContainer> lambda) {
         packetProcessor.registerCallbackForNUses(packetType, uses, lambda);
+    }
+
+    public void registerMutuallyExclusiveCallback(MutuallyExclusiveCallback callback) {
+        packetProcessor.registerMutuallyExclusiveCallback(callback);
     }
 
     public void sendPacket(PacketType packetType) {

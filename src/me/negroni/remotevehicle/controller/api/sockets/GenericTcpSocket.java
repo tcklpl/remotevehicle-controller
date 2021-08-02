@@ -30,6 +30,9 @@ public abstract class GenericTcpSocket {
 
     public void sendPacket(PacketType type, String optionalInfo) {
         sendMessage(type.getCode() + (optionalInfo == null ? "" : optionalInfo));
+        if (type == PacketType.PACKET_CAMERA_CHANGE_RESOLUTION) {
+            System.out.println(type.getCode() + (optionalInfo == null ? "" : optionalInfo));
+        }
     }
 
     private void sendMessage(String msg) {

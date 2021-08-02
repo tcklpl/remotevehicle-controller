@@ -37,18 +37,16 @@ public class GuiTest {
 
         Arrays.stream(CameraImageSize.values()).forEach(x -> cmbRes.addItem(x));
 
-        btnRequestImg.addActionListener(e -> {
-            remoteVehicle.getCamera().requestCameraImage(b -> {
-                imgLabel.setIcon(new ImageIcon(b));
-                btnRequestImg.setEnabled(true);
-            });
-        });
+        btnRequestImg.addActionListener(e -> remoteVehicle.getCamera().requestCameraImage(b -> {
+            imgLabel.setIcon(new ImageIcon(b));
+            btnRequestImg.setEnabled(true);
+        }));
 
         btnRes.addActionListener(e -> {
             lblRes.setText("Resolução: (Mudando)");
-            remoteVehicle.getCamera().requestResolutionChange((CameraImageSize) cmbRes.getSelectedItem(), () -> {
-                lblRes.setText("Resolução:");
-            });
+            remoteVehicle.getCamera().requestResolutionChange((CameraImageSize) cmbRes.getSelectedItem(),
+                    () -> lblRes.setText("Resolução:"),
+                    () -> lblRes.setText("Resolução: (ERRO)"));
         });
 
         btnConnect.addActionListener(e -> {

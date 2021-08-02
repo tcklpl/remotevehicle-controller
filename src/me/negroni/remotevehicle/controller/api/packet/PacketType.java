@@ -22,7 +22,9 @@ public enum PacketType {
     PACKET_CAMERA_CHANGE_RESOLUTION("CFCS", PackerSender.CLIENT),
     PACKET_CAMERA_RESOLUTION_CHANGED("CFCO", PackerSender.SERVER),
     PACKET_REQUEST_CAMERA_IMAGE("DTRC", PackerSender.CLIENT),
-    PACKET_CAMERA_IMAGE("DTDC", PackerSender.SERVER);
+    PACKET_CAMERA_IMAGE("DTDC", PackerSender.SERVER),
+
+    PACKET_ERROR_CHANGING_CAMERA_RESOLUTION("ER02", PackerSender.SERVER);
 
     private final String code;
     private final PackerSender sender;
