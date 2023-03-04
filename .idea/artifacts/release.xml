@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="release">
+    <output-path>$PROJECT_DIR$/out/artifacts/release</output-path>
+    <root id="archive" name="release.jar">
+      <element id="module-output" name="remotevehicle-controller" />
+    </root>
+  </artifact>
+</component>
