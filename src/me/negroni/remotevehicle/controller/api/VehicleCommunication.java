@@ -40,8 +40,6 @@ public class VehicleCommunication {
             tcpSocket.sendPacket(PacketType.PACKET_REQUEST_CONNECTION, null);
         });
 
-        packetProcessor.registerCallback(PacketType.PACKET_ACCEPTED_CONNECTION, c -> System.out.println("Connected CMD!"));
-
         packetProcessor.registerCallback(PacketType.PACKET_SERVER_REQUESTING_IMG_CONNECTION_ATTEMPT, c -> {
             if (connected) return;
             if (!shouldTryToConnect) return;
@@ -53,7 +51,6 @@ public class VehicleCommunication {
         });
 
         packetProcessor.registerCallback(PacketType.PACKET_IMG_ACCEPTED_CONNECTION, c -> {
-            System.out.println("Connected IMG!");
             connected = true;
         });
 
