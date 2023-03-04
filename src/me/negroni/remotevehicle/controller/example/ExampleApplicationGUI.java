@@ -1,4 +1,4 @@
-package me.negroni.remotevehicle.controller.tests;
+package me.negroni.remotevehicle.controller.example;
 
 import me.negroni.remotevehicle.controller.api.RemoteVehicle;
 import me.negroni.remotevehicle.controller.api.camera.CameraImageSize;
@@ -7,7 +7,7 @@ import me.negroni.remotevehicle.controller.api.packet.PacketType;
 import javax.swing.*;
 import java.util.Arrays;
 
-public class GuiTest {
+public class ExampleApplicationGUI {
 
     private JLabel titleLabel;
     private JPanel mainPanel;
@@ -22,7 +22,7 @@ public class GuiTest {
 
     private final RemoteVehicle remoteVehicle;
 
-    public GuiTest() {
+    public ExampleApplicationGUI() {
         remoteVehicle = new RemoteVehicle();
         register();
         JFrame frame = new JFrame("test");
